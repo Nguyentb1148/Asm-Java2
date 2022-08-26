@@ -1,6 +1,7 @@
 package Model;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,11 +27,7 @@ public class Validator {
             for (char c : chars) {
                 if (Character.isDigit(c)) {
                     stringBuilder.append("Name does not contain number!\n");
-                    feild.setText("");
-                    if (!checkEmpty(feild, stringBuilder, "Name is not empty!")) {
-                        feild.setBackground(Color.green);
-                        return false;
-                    }
+                    feild.setBorder((Border) Color.red);
                  break;
                 }
             }
