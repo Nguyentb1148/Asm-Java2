@@ -6,11 +6,7 @@ package Model;
 
 //import ManageStudent.Student;
 
-import Helper.HandleFile;
-
 import javax.swing.table.DefaultTableModel;
-import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +17,8 @@ import java.util.List;
  */
 public class StudentList {
 
-        String path = "C:\\Users\\dell\\OneDrive\\Máy tính\\Data.txt";
+//        String path = "C:\\Users\\dell\\OneDrive\\Máy tính\\Data.txt";
+//        String path ="/Users/tranbaonguyen/Desktop/Data.txt";
 
         List<Student> studentList = new ArrayList<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -75,18 +72,18 @@ public class StudentList {
                 return -1;
         }
 
-        public void saveToFile() throws IOException {
-                HandleFile.writeObject(path, studentList);
-        }
-
-        public void loadFormFile() throws IOException,
-                ClassNotFoundException {
-                File file = new File(path);
-
-                if (file.exists()) {
-                        studentList = (ArrayList<Student>) HandleFile.readObj(path);
-                }
-        }
+//        public void saveToFile() throws IOException {
+//                HandleFile.writeObject(path, studentList);
+//        }
+//
+//        public void loadFormFile() throws IOException,
+//                ClassNotFoundException {
+//                File file = new File(path);
+//
+//                if (file.exists()) {
+//                        studentList = (ArrayList<Student>) HandleFile.readObj(path);
+//                }
+//        }
         public void updateDataTable(DefaultTableModel tbM) {
                 for (Student sv : studentList) {
                         Object[] rowData = new Object[7];

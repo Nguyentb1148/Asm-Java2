@@ -6,18 +6,12 @@ package View;
 
 import Model.Student;
 import Model.StudentList;
+import Model.Validator;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.awt.image.ImagingOpException;
-import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Objects;
 
 /**
  *
@@ -26,15 +20,15 @@ import java.util.Objects;
 public class StudentForm extends javax.swing.JFrame {
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-    StudentList sinhVienList = new StudentList();
-    DefaultTableModel tbM = null;
+    StudentList StudentList = new StudentList();
+//    DefaultTableModel tbM = null;
 
     /**
      * Creates new form SinhVienDialog
      */
     public StudentForm() {
         initComponents();
-        loadProductData();
+//        loadProductData();
     }
 
     /**
@@ -379,7 +373,7 @@ public class StudentForm extends javax.swing.JFrame {
         inputBirthday.setText("");
         inputEmail.setText("");
         inputPhoneNumber.setText("");
-        rdMale.isSelected();
+        rdMale.setSelected(true);
         inputAddress.setText("");
     }
 
@@ -402,9 +396,12 @@ public class StudentForm extends javax.swing.JFrame {
         }
         sv.setEmail(inputEmail.getText());
         sv.setPhoneNumber(inputPhoneNumber.getText());
-        boolean sex=false;// mac dinh la nam
+        boolean sex;// mac dinh la nam
         if (rdMale.isSelected()){
             sex=true;//nu
+        }
+        else {
+            sex=false;
         }
         sv.setSex(sex);
         sv.setAddress(inputAddress.getText());
@@ -418,17 +415,17 @@ public class StudentForm extends javax.swing.JFrame {
         inputEmail.setText(sv.getEmail());
         inputPhoneNumber.setText(sv.getPhoneNumber());
         if (sv.getSex()){
-            rdMale.isSelected();
+            rdMale.setSelected(true);
         }
         else{
-            rdFemale.isSelected();
+            rdFemale.setSelected(true);
         }
         inputAddress.setText(sv.getAddress());
     }
     public void fillDataTable() {
         DefaultTableModel model = (DefaultTableModel) tbStudent.getModel();
         model.setRowCount(0);//clear table
-        for (Student sv : sinhVienList.getStudentList()) {
+        for (Student sv : StudentList.getStudentList()) {
             Object[] rowData = new Object[7];
             rowData[0] = sv.getIdPerson();
             rowData[1] = sv.getName();
@@ -448,7 +445,7 @@ public class StudentForm extends javax.swing.JFrame {
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         if (validateForm()) {
             Student student = getModel();
-            if (sinhVienList.add(student) > 0) {
+            if (StudentList.add(student) > 0) {
                 JOptionPane.showMessageDialog(this, "Save Success");
                 fillDataTable();
             }
@@ -460,14 +457,31 @@ public class StudentForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-        if (validateForm()) {
-               Student student =getModel();
-               if (sinhVienList.updateStudentById(student)>0){
-                   JOptionPane.showMessageDialog(this, "update Success");
-                   fillDataTable();
-               }
-        } else {
-            JOptionPane.showMessageDialog(this, "Form shouldn't empty");
+//        if (validateForm()) {
+//               Student student =getModel();
+//               if (sinhVienList.updateStudentById(student)>0){
+//                   JOptionPane.showMessageDialog(this, "update Success");
+//                   fillDataTable();
+//               }
+//        } else {
+//            JOptionPane.showMessageDialog(this, "Form shouldn't empty");
+//        }
+        try{
+            StringBuilder sb=new StringBuilder();
+            Validator.checkName(inputName,sb);
+
+            if (sb.length()>0){
+                JOptionPane.showMessageDialog(this,"Check your name.");
+            }
+            else {
+                Student student = getModel();
+                if (StudentList.updateStudentById(student) > 0) {
+                    JOptionPane.showMessageDialog(this, "update Success");
+                    fillDataTable();
+                }
+            }
+        }catch (Exception e){
+            System.out.println("Error: "+e.toString());
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
@@ -475,7 +489,7 @@ public class StudentForm extends javax.swing.JFrame {
         if (inputIdStudent.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this,"Input id.");
         }else {
-            if (sinhVienList.deleteStudentById(inputIdStudent.getText()) > 0) {
+            if (StudentList.deleteStudentById(inputIdStudent.getText()) > 0) {
                 JOptionPane.showMessageDialog(this, "Delete Success");
                 fillDataTable();
             }else{
@@ -487,8 +501,9 @@ public class StudentForm extends javax.swing.JFrame {
     private void tbStudentMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbStudentMouseClicked
         int id = tbStudent.rowAtPoint(evt.getPoint());
         String idStudent= tbStudent.getValueAt(id,0).toString();
-        Student student= sinhVienList.getStudentById(idStudent);
+        Student student= StudentList.getStudentById(idStudent);
         setModel(student);
+        fillDataTable();
 
     }//GEN-LAST:event_tbStudentMouseClicked
 
@@ -520,7 +535,7 @@ public class StudentForm extends javax.swing.JFrame {
         if (inputSearchIdStudent.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Input id student");
         } else {
-            Student sv = sinhVienList.getStudentById(inputSearchIdStudent.getText());
+            Student sv = StudentList.getStudentById(inputSearchIdStudent.getText());
             if (sv != null) {
                 setModel(sv);
             }
@@ -540,20 +555,20 @@ public class StudentForm extends javax.swing.JFrame {
         
     }//GEN-LAST:event_inputSearchIdStudentActionPerformed
 
-    private void loadProductData() {
-        try {
-            sinhVienList.loadFormFile();
-            sinhVienList.updateDataTable(tbM);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "File Error: "
-                    + ex.getMessage());
-        } catch (ClassNotFoundException ex) {
-            JOptionPane.showMessageDialog(this, "NotFound Error: "
-                    + ex.getMessage());
-        }
-
-    }
+//    private void loadProductData() {
+//        try {
+//            sinhVienList.loadFormFile();
+//            sinhVienList.updateDataTable(tbM);
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//            JOptionPane.showMessageDialog(this, "File Error: "
+//                    + ex.getMessage());
+//        } catch (ClassNotFoundException ex) {
+//            JOptionPane.showMessageDialog(this, "NotFound Error: "
+//                    + ex.getMessage());
+//        }
+//
+//    }
     /**
      * @param args the command line arguments
      */

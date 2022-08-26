@@ -11,8 +11,6 @@ public  class Student {
     protected boolean sex;
     protected String address;
 
-
-
     public Student(String name, String idPerson, Date birthday, String email, String phoneNumber, boolean sex, String address){
         this.address=address;
         this.idPerson=idPerson;
@@ -67,9 +65,5 @@ public  class Student {
     }
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public void display() {
-        System.out.println(name+" "+idPerson+" "+birthday+" " +email+" 0"+phoneNumber+" "+sex+" "+address);
     }
 }
