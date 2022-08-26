@@ -7,6 +7,13 @@ package View;
 import Model.Student;
 import Model.StudentList;
 import Model.Validator;
+import java.awt.HeadlessException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -28,7 +35,7 @@ public class StudentForm extends javax.swing.JFrame {
      */
     public StudentForm() {
         initComponents();
-//        loadProductData();
+        openFile();
     }
 
     /**
@@ -67,8 +74,11 @@ public class StudentForm extends javax.swing.JFrame {
         inputSearchIdStudent = new javax.swing.JTextField();
         btnSearchIdName = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(255, 153, 0));
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -254,6 +264,20 @@ public class StudentForm extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jButton1.setText("Open file");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Save file");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -262,12 +286,16 @@ public class StudentForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 704, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(290, 290, 290)
                         .addComponent(jLabel1)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 704, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton2)
+                            .addComponent(jButton1))
+                        .addGap(30, 30, 30))))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
@@ -316,8 +344,12 @@ public class StudentForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jButton1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -367,7 +399,7 @@ public class StudentForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void reset(){
+    public void reset() {
         inputName.setText("");
         inputIdStudent.setText("");
         inputBirthday.setText("");
@@ -385,43 +417,42 @@ public class StudentForm extends javax.swing.JFrame {
         return true;
     }
 
-    public Student getModel(){
-        Student sv=new Student();
+    public Student getModel() {
+        Student sv = new Student();
         sv.setName(inputName.getText());
         sv.setIdPerson(inputIdStudent.getText());
         try {
             sv.setBirthday(dateFormat.parse(inputBirthday.getText()));
         } catch (ParseException e) {
-            System.out.println("Error: "+e.toString());
+            System.out.println("Error: " + e.toString());
         }
         sv.setEmail(inputEmail.getText());
         sv.setPhoneNumber(inputPhoneNumber.getText());
         boolean sex;// mac dinh la nam
-        if (rdMale.isSelected()){
-            sex=true;//nu
-        }
-        else {
-            sex=false;
+        if (rdMale.isSelected()) {
+            sex = true;//nu
+        } else {
+            sex = false;
         }
         sv.setSex(sex);
         sv.setAddress(inputAddress.getText());
         return sv;
     }
 
-    public  void setModel(Student sv){
+    public void setModel(Student sv) {
         inputName.setText(sv.getName());
         inputIdStudent.setText(sv.getIdPerson());
         inputBirthday.setText(dateFormat.format(sv.getBirthday()));
         inputEmail.setText(sv.getEmail());
         inputPhoneNumber.setText(sv.getPhoneNumber());
-        if (sv.getSex()){
+        if (sv.getSex()) {
             rdMale.setSelected(true);
-        }
-        else{
+        } else {
             rdFemale.setSelected(true);
         }
         inputAddress.setText(sv.getAddress());
     }
+
     public void fillDataTable() {
         DefaultTableModel model = (DefaultTableModel) tbStudent.getModel();
         model.setRowCount(0);//clear table
@@ -430,8 +461,8 @@ public class StudentForm extends javax.swing.JFrame {
             rowData[0] = sv.getIdPerson();
             rowData[1] = sv.getName();
             rowData[2] = dateFormat.format(sv.getBirthday());
-            rowData[3]= sv.getEmail();
-            rowData[4]=sv.getPhoneNumber();
+            rowData[3] = sv.getEmail();
+            rowData[4] = sv.getPhoneNumber();
             rowData[5] = sv.getSex() ? "Male" : "Female";
             rowData[6] = sv.getAddress();
             model.addRow(rowData);
@@ -452,8 +483,7 @@ public class StudentForm extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Form shouldn't empty");
         }
-        
-        
+
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
@@ -466,33 +496,32 @@ public class StudentForm extends javax.swing.JFrame {
 //        } else {
 //            JOptionPane.showMessageDialog(this, "Form shouldn't empty");
 //        }
-        try{
-            StringBuilder sb=new StringBuilder();
-            Validator.checkName(inputName,sb);
-
-            if (sb.length()>0){
-                JOptionPane.showMessageDialog(this,"Check your name.");
-            }
-            else {
+        try {
+            StringBuilder sb = new StringBuilder();
+            Validator.checkId(inputIdStudent, sb);
+            Validator.checkName(inputName, sb);
+            if (sb.length() > 0) {
+                JOptionPane.showMessageDialog(this, sb.toString(),"Invalid", JOptionPane.ERROR_MESSAGE);
+            } else {
                 Student student = getModel();
                 if (StudentList.updateStudentById(student) > 0) {
-                    JOptionPane.showMessageDialog(this, "update Success");
+                    JOptionPane.showMessageDialog(this,"update success");
                     fillDataTable();
                 }
             }
-        }catch (Exception e){
-            System.out.println("Error: "+e.toString());
+        } catch (Exception e) {
+            System.out.println("Error: " + e.toString());
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         if (inputIdStudent.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this,"Input id.");
-        }else {
+            JOptionPane.showMessageDialog(this, "Input id.");
+        } else {
             if (StudentList.deleteStudentById(inputIdStudent.getText()) > 0) {
                 JOptionPane.showMessageDialog(this, "Delete Success");
                 fillDataTable();
-            }else{
+            } else {
                 JOptionPane.showMessageDialog(this, "Table is empty");
             }
         }
@@ -500,8 +529,8 @@ public class StudentForm extends javax.swing.JFrame {
 
     private void tbStudentMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbStudentMouseClicked
         int id = tbStudent.rowAtPoint(evt.getPoint());
-        String idStudent= tbStudent.getValueAt(id,0).toString();
-        Student student= StudentList.getStudentById(idStudent);
+        String idStudent = tbStudent.getValueAt(id, 0).toString();
+        Student student = StudentList.getStudentById(idStudent);
         setModel(student);
         fillDataTable();
 
@@ -538,8 +567,7 @@ public class StudentForm extends javax.swing.JFrame {
             Student sv = StudentList.getStudentById(inputSearchIdStudent.getText());
             if (sv != null) {
                 setModel(sv);
-            }
-                else{     
+            } else {
                 inputName.setText("");
                 inputIdStudent.setText("");
                 inputBirthday.setText("");
@@ -552,8 +580,97 @@ public class StudentForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSearchIdNameActionPerformed
 
     private void inputSearchIdStudentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputSearchIdStudentActionPerformed
-        
+
     }//GEN-LAST:event_inputSearchIdStudentActionPerformed
+
+    public void wrFile() {
+        FileOutputStream fileOutputStream = null;
+        ObjectOutputStream objectOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream("data.dat");
+            objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(StudentList);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        } finally {
+            try {
+                objectOutputStream.close();
+                fileOutputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void reaFile() {
+        FileInputStream fileInputStream = null;
+        ObjectInputStream objectInputStream = null;
+        try {
+            fileInputStream = new FileInputStream("data.dat");
+            objectInputStream = new ObjectInputStream(fileInputStream);
+            StudentList = (StudentList) objectInputStream.readObject();
+        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
+
+        } finally {
+            try {
+                objectInputStream.close();
+                fileInputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void openFile() {
+        reaFile();
+        fillDataTable();
+    }
+
+    public StudentForm(JButton btnAdd, JButton btnDelete, JButton btnSave, JButton btnSearchIdName, JButton btnUpdate, ButtonGroup buttonGroup1, JTextField inputAddress, JTextField inputBirthday, JTextField inputEmail, JTextField inputIdStudent, JTextField inputName, JTextField inputPhoneNumber, JTextField inputSearchIdStudent, JButton jButton1, JButton jButton2, JLabel jLabel1, JLabel jLabel2, JLabel jLabel3, JLabel jLabel4, JLabel jLabel5, JLabel jLabel6, JLabel jLabel7, JLabel jLabel8, JLabel jLabel9, JPanel jPanel1, JScrollPane jScrollPane1, JRadioButton rdFemale, JRadioButton rdMale, JTable tbStudent) throws HeadlessException {
+        this.btnAdd = btnAdd;
+        this.btnDelete = btnDelete;
+        this.btnSave = btnSave;
+        this.btnSearchIdName = btnSearchIdName;
+        this.btnUpdate = btnUpdate;
+        this.buttonGroup1 = buttonGroup1;
+        this.inputAddress = inputAddress;
+        this.inputBirthday = inputBirthday;
+        this.inputEmail = inputEmail;
+        this.inputIdStudent = inputIdStudent;
+        this.inputName = inputName;
+        this.inputPhoneNumber = inputPhoneNumber;
+        this.inputSearchIdStudent = inputSearchIdStudent;
+        this.jButton1 = jButton1;
+        this.jButton2 = jButton2;
+        this.jLabel1 = jLabel1;
+        this.jLabel2 = jLabel2;
+        this.jLabel3 = jLabel3;
+        this.jLabel4 = jLabel4;
+        this.jLabel5 = jLabel5;
+        this.jLabel6 = jLabel6;
+        this.jLabel7 = jLabel7;
+        this.jLabel8 = jLabel8;
+        this.jLabel9 = jLabel9;
+        this.jPanel1 = jPanel1;
+        this.jScrollPane1 = jScrollPane1;
+        this.rdFemale = rdFemale;
+        this.rdMale = rdMale;
+        this.tbStudent = tbStudent;
+    }
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        openFile();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        wrFile();
+        JOptionPane.showMessageDialog(this, "Save file successfully");
+    }//GEN-LAST:event_jButton2ActionPerformed
 
 //    private void loadProductData() {
 //        try {
@@ -618,6 +735,8 @@ public class StudentForm extends javax.swing.JFrame {
     private javax.swing.JTextField inputName;
     private javax.swing.JTextField inputPhoneNumber;
     private javax.swing.JTextField inputSearchIdStudent;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -634,5 +753,3 @@ public class StudentForm extends javax.swing.JFrame {
     private javax.swing.JTable tbStudent;
     // End of variables declaration//GEN-END:variables
 }
-
-
