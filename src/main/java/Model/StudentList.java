@@ -16,21 +16,14 @@ import java.util.List;
  * @author tranbaonguyen
  */
 public class StudentList implements Serializable {
-
-//        String path = "C:\\Users\\dell\\OneDrive\\Máy tính\\Data.txt";
-//        String path ="/Users/tranbaonguyen/Desktop/Data.txt";
     List<Student> studentList = new ArrayList<>();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
     public int add(Student sv) {
         studentList.add(sv);
         return 1;
     }
-
     public List<Student> getStudentList() {
         return studentList;
     }
-
     public int deleteStudentById(String maStudent) {
         for (Student sv : studentList) {
             if (sv.getIdPerson().equalsIgnoreCase(maStudent)) {
@@ -40,7 +33,6 @@ public class StudentList implements Serializable {
         }
         return -1;
     }
-
     public Student getStudentById(String id) {
         for (Student sv : studentList) {
             if (sv.getIdPerson().equalsIgnoreCase(id)) {
@@ -49,16 +41,6 @@ public class StudentList implements Serializable {
         }
         return null;
     }
-
-    public Student getStudentByEmail(String email) {
-        for (Student sv : studentList) {
-            if (sv.getEmail().equalsIgnoreCase(email)) {
-                return sv;
-            }
-        }
-        return null;
-    }
-
     public int updateStudentById(Student student) {
         for (Student sv : studentList) {
             if (sv.getIdPerson().equalsIgnoreCase(student.getIdPerson())) {
@@ -70,32 +52,5 @@ public class StudentList implements Serializable {
             }
         }
         return -1;
-    }
-
-//        public void saveToFile() throws IOException {
-//                HandleFile.writeObject(path, studentList);
-//        }
-//
-//        public void loadFormFile() throws IOException,
-//                ClassNotFoundException {
-//                File file = new File(path);
-//
-//                if (file.exists()) {
-//                        studentList = (ArrayList<Student>) HandleFile.readObj(path);
-//                }
-//        }
-    public void updateDataTable(DefaultTableModel tbM) {
-        for (Student sv : studentList) {
-            Object[] rowData = new Object[7];
-            rowData[0] = sv.getIdPerson();
-            rowData[1] = sv.getName();
-            rowData[2] = dateFormat.format(sv.getBirthday());
-            rowData[3] = sv.getEmail();
-            rowData[4] = sv.getPhoneNumber();
-            rowData[5] = sv.getSex() ? "Male" : "Female";
-            rowData[6] = sv.getAddress();
-            tbM.addRow(rowData);
-        }
-        tbM.fireTableDataChanged();
     }
 }

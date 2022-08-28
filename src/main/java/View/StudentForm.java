@@ -19,6 +19,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 
 /**
  *
@@ -28,10 +29,9 @@ public class StudentForm extends javax.swing.JFrame {
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
     StudentList StudentList = new StudentList();
-//    DefaultTableModel tbM = null;
 
     /**
-     * Creates new form SinhVienDialog
+     * Creates new form StudentForm
      */
     public StudentForm() {
         initComponents();
@@ -75,7 +75,7 @@ public class StudentForm extends javax.swing.JFrame {
         btnSearchIdName = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnSaveFile = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 153, 0));
@@ -271,10 +271,10 @@ public class StudentForm extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Save file");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnSaveFile.setText("Save file");
+        btnSaveFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnSaveFileActionPerformed(evt);
             }
         });
 
@@ -293,7 +293,7 @@ public class StudentForm extends javax.swing.JFrame {
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton2)
+                            .addComponent(btnSaveFile)
                             .addComponent(jButton1))
                         .addGap(30, 30, 30))))
             .addGroup(layout.createSequentialGroup()
@@ -348,7 +348,7 @@ public class StudentForm extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(jButton1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
+                .addComponent(btnSaveFile)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -398,16 +398,6 @@ public class StudentForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    public void reset() {
-        inputName.setText("");
-        inputIdStudent.setText("");
-        inputBirthday.setText("");
-        inputEmail.setText("");
-        inputPhoneNumber.setText("");
-        rdMale.setSelected(true);
-        inputAddress.setText("");
-    }
 
     public boolean validateForm() {
         if (inputIdStudent.getText().isEmpty() || inputAddress.getText().isEmpty() || inputIdStudent.getText().isEmpty()
@@ -468,17 +458,35 @@ public class StudentForm extends javax.swing.JFrame {
             model.addRow(rowData);
         }
     }
-
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        reset();
+        inputName.setText("");
+        inputIdStudent.setText("");
+        inputBirthday.setText("");
+        inputEmail.setText("");
+        inputPhoneNumber.setText("");
+        rdMale.setSelected(true);
+        inputAddress.setText("");
     }//GEN-LAST:event_btnAddActionPerformed
-
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         if (validateForm()) {
             Student student = getModel();
             if (StudentList.add(student) > 0) {
-                JOptionPane.showMessageDialog(this, "Save Success");
-                fillDataTable();
+                try {
+                    StringBuilder sb = new StringBuilder();
+                    Validator.checkId(inputIdStudent, sb);
+                    Validator.checkName(inputName, sb);
+
+                    if (sb.length() > 0) {
+                        JOptionPane.showMessageDialog(this, sb.toString(), "Invalid", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        if (StudentList.updateStudentById(student) > 0) {
+                            JOptionPane.showMessageDialog(this, "Save success");
+                            fillDataTable();
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error: " + e.toString());
+                }
             }
         } else {
             JOptionPane.showMessageDialog(this, "Form shouldn't empty");
@@ -487,25 +495,16 @@ public class StudentForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-//        if (validateForm()) {
-//               Student student =getModel();
-//               if (sinhVienList.updateStudentById(student)>0){
-//                   JOptionPane.showMessageDialog(this, "update Success");
-//                   fillDataTable();
-//               }
-//        } else {
-//            JOptionPane.showMessageDialog(this, "Form shouldn't empty");
-//        }
         try {
             StringBuilder sb = new StringBuilder();
             Validator.checkId(inputIdStudent, sb);
             Validator.checkName(inputName, sb);
             if (sb.length() > 0) {
-                JOptionPane.showMessageDialog(this, sb.toString(),"Invalid", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, sb.toString(), "Invalid", JOptionPane.ERROR_MESSAGE);
             } else {
                 Student student = getModel();
                 if (StudentList.updateStudentById(student) > 0) {
-                    JOptionPane.showMessageDialog(this,"update success");
+                    JOptionPane.showMessageDialog(this, "update success");
                     fillDataTable();
                 }
             }
@@ -590,12 +589,11 @@ public class StudentForm extends javax.swing.JFrame {
             fileOutputStream = new FileOutputStream("data.dat");
             objectOutputStream = new ObjectOutputStream(fileOutputStream);
             objectOutputStream.writeObject(StudentList);
-
         } catch (Exception e) {
             e.printStackTrace();
-
         } finally {
             try {
+                assert objectOutputStream != null;
                 objectOutputStream.close();
                 fileOutputStream.close();
             } catch (Exception e) {
@@ -611,12 +609,10 @@ public class StudentForm extends javax.swing.JFrame {
             fileInputStream = new FileInputStream("data.dat");
             objectInputStream = new ObjectInputStream(fileInputStream);
             StudentList = (StudentList) objectInputStream.readObject();
-        } catch (FileNotFoundException e) {
-        } catch (Exception e) {
-
+        } catch (Exception ignored) {
         } finally {
             try {
-                objectInputStream.close();
+                Objects.requireNonNull(objectInputStream).close();
                 fileInputStream.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -644,7 +640,7 @@ public class StudentForm extends javax.swing.JFrame {
         this.inputPhoneNumber = inputPhoneNumber;
         this.inputSearchIdStudent = inputSearchIdStudent;
         this.jButton1 = jButton1;
-        this.jButton2 = jButton2;
+        this.btnSaveFile = jButton2;
         this.jLabel1 = jLabel1;
         this.jLabel2 = jLabel2;
         this.jLabel3 = jLabel3;
@@ -666,11 +662,11 @@ public class StudentForm extends javax.swing.JFrame {
         openFile();
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnSaveFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveFileActionPerformed
         // TODO add your handling code here:
         wrFile();
         JOptionPane.showMessageDialog(this, "Save file successfully");
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btnSaveFileActionPerformed
 
 //    private void loadProductData() {
 //        try {
@@ -689,9 +685,9 @@ public class StudentForm extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        //<editor-fold default-state="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
@@ -725,6 +721,7 @@ public class StudentForm extends javax.swing.JFrame {
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnSave;
+    private javax.swing.JButton btnSaveFile;
     private javax.swing.JButton btnSearchIdName;
     private javax.swing.JButton btnUpdate;
     private javax.swing.ButtonGroup buttonGroup1;
@@ -736,7 +733,6 @@ public class StudentForm extends javax.swing.JFrame {
     private javax.swing.JTextField inputPhoneNumber;
     private javax.swing.JTextField inputSearchIdStudent;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
