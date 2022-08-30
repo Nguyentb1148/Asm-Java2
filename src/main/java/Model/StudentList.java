@@ -48,9 +48,20 @@ public class StudentList implements Serializable {
                 sv.setBirthday(student.getBirthday());
                 sv.setSex(student.getSex());
                 sv.setAddress(student.getAddress());
+                sv.setEmail(student.getEmail());
+                sv.setPhoneNumber(student.getPhoneNumber());
                 return 1;
             }
         }
         return -1;
+    }
+    public Student searchById(String productId) {
+        for (Student student : studentList) {
+            if (student.getIdPerson().replaceAll(" ", "").toLowerCase().
+                    equalsIgnoreCase(productId.replaceAll(" ", "").toLowerCase())) {
+                return student;
+            }
+        }
+        return null;
     }
 }

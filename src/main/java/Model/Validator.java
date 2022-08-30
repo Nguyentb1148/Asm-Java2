@@ -35,8 +35,6 @@ public class Validator {
                 field.setBorder((Border) Color.red);
             }
         } catch (Exception e) {
-            stringBuilder.append("Name must be a string!\n");
-            field.setBackground(new Color(204, 0, 0, 21));
             System.out.println("Name error: " + e.getMessage());
             isValidate = false;
         }
@@ -73,8 +71,6 @@ public class Validator {
                 field.setBorder((Border) Color.red);
             }
         } catch (Exception e) {
-            stringBuilder.append("id must be a string!\n");
-            field.setBackground(new Color(204, 0, 0, 21));
             System.out.println("Name error: " + e.getMessage());
             isValidate = false;
         }
